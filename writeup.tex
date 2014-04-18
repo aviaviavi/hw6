@@ -1,0 +1,59 @@
+\documentclass{article}
+\begin{document}
+
+1. Mean squared error \\
+$$
+\frac{\partial J}{\partial W_{jk}} = \frac{\partial J}{\partial y_k}
+\frac{\partial y_k}{\partial in_k} \frac{\partial in_j}{\partial W_{jk}}
+$$
+where
+
+$$
+in_k = \sum_j W_{jk} x_j + b_k
+$$
+
+and $y_k$ is the sigmoid function of $in_j$
+
+$$
+\frac{\partial J}{\partial y_k} = -(t_k - y_k)
+$$$$
+\frac{\partial y_k}{\partial in_j} = y_k(1 - y_k)
+$$$$
+\frac{\partial in_j}{\partial W_{jk}} = \frac{\partial}{\partial W_{jk}} \sum_j
+W_{jk}x_j + b_k = x_j
+$$$$
+\frac{\partial J}{\partial W_{jk}} = -(t_k - y_k) y_k(1 - y_k) x_j
+$$\\
+
+This partial derivitive for the bias works the same way, except
+$$
+\frac{\partial J}{\partial y_k} = -(t_k - y_k)
+$$$$
+\frac{\partial y_k}{\partial in_j} = y_k(1 - y_k)
+$$$$
+\frac{\partial in_j}{\partial b_k} = 1
+$$$$
+\frac{\partial J}{\partial b_k} = -(t_k - y_k) y_k(1 - y_k)
+$$\\
+Thus, the update for the weights and baises become:
+$$
+W_{jk} \leftarrow W_{jk} - \eta \frac{\partial J}{\partial W_{jk}}
+$$
+$$
+b_{k} \leftarrow b_{k} - \eta \frac{\partial J}{\partial b_{k}}
+$$
+2. Cross-entropy error \\
+The only term that changes here is $\frac{\partial J}{\partial y_k}$ which
+becomes:
+$$
+\frac{1 - t_k}{1 - y_k} - \frac{t_k}{y_k} 
+$$
+
+so the entire gradient becomes 
+$$
+\frac{\partial J}{\partial y_k} = (\frac{1 - t_k}{1 - y_k} - \frac{t_k}{y_k})
+y_k(1 - y_k) x_j
+$$\\
+
+
+\end{document}
