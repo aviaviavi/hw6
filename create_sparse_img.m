@@ -12,7 +12,7 @@ for i = 1:size(images,3)
     for j = 1:784;
         newImages(i,j) = concatted(j);
     end
-    newImages(i,:) = newImages(i,:) / sum(newImages(i,:));
+    %newImages(i,:) = newImages(i,:) / sum(newImages(i,:));
 end
 
 newImages = sparse(newImages);
