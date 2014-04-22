@@ -30,7 +30,7 @@ function [ w1, w2, err1, err2, test_err1, test_err2, train_err1, train_err2 ] = 
         w2{i} = w1{i};
     end
     num_batches = ceil(size(obs, 1) / 200);
-    num_epochs = 250;
+    num_epochs = 400;
     err1 = zeros(1, num_epochs / 10 + 1);
     err2 = zeros(1, num_epochs / 10 + 1);
     for epoch = 1:num_epochs
@@ -64,11 +64,9 @@ function [ w1, w2, err1, err2, test_err1, test_err2, train_err1, train_err2 ] = 
                 class_predictions2 = zeros(size(test_predictions2,1), 1);
                 train_predictions1 = make_predictions(w1, obs);
                 train_predictions2 = make_predictions(w2, obs);
-                train_class_predictions1 = zeros(size(train_predictions1,1), 1);
-                train_class_predictions2 = zeros(size(train_predictions2,1), 1);
-                for i=1:size(train_predictions1,1)
-                   train_class_predictions1(i) = find(train_predictions1(i,:) == max(train_predictions1(i,:))) - 1;
-                   train_class_predictions2(i) = find(train_predictions2(i,:) == max(train_predictions2(i,:))) - 1;
+                for i=1:size(train_predictions1)
+                   class_predictions1(i) = find(test_predictions1(i,:) == max(test_predictions1(i,:))) - 1;
+                   class_predictions2(i) = find(test_predictions2(i,:) == max(test_predictions2(i,:))) - 1;
                 end
                 for i=1:size(test_predictions1,1)
                    class_predictions1(i) = find(test_predictions1(i,:) == max(test_predictions1(i,:))) - 1;
@@ -76,8 +74,6 @@ function [ w1, w2, err1, err2, test_err1, test_err2, train_err1, train_err2 ] = 
                 end
                 test_err1 = [test_err1 double(sum(class_predictions1 ~= test_labels)) / double(length(class_predictions1))];
                 test_err2 = [test_err2 double(sum(class_predictions2 ~= test_labels)) / double(length(class_predictions2))];
-                train_err1 = [train_err1 double(sum(train_class_predictions1 ~= out)) / double(length(train_class_predictions1))];
-                train_err2 = [train_err2 double(sum(train_class_predictions2 ~= out)) / double(length(train_class_predictions2))];
             end
             gradients1 = zeros(size(w1{1}));
             deltas1 = zeros(1,num_out);
