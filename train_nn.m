@@ -13,7 +13,8 @@ function [ w1, w2, test_err1, test_err2, train_err1, train_err2 ] = train_nn(obs
     if nargin < 3
         sizes_hidden = [];
     end
-    og_step_size = .0000001;
+    og_step_size = .01;
+    epsilon = .00000000001
     % add in bias term
     obs = [obs ones(size(obs,1),1)];
     num_in = size(obs,2);
@@ -24,18 +25,18 @@ function [ w1, w2, test_err1, test_err2, train_err1, train_err2 ] = train_nn(obs
     w2 = {};
     for i = 1:length(sizes) - 1
         % center weights around 0
-        w1{i} = rand(sizes(i), sizes(i+1)) * .0010 - .0005;
+        w1{i} = rand(sizes(i), sizes(i+1)) - .5;
         w2{i} = w1{i};
     end
     num_batches = ceil(size(obs, 1) / 200);
-    num_epochs = 250;
+    num_epochs = 100;
     for epoch = 1:num_epochs
         epoch
         % shuffle data
         p = randperm(size(obs, 1));
         rand_obs = reshape(obs(p,:), size(obs, 1), size(obs, 2));
         rand_out = reshape(out(p,:), size(out, 1), size(out, 2));
-        step_size = (1.0 / ((epoch+1) ^ .5)) * og_step_size;
+        step_size = (1.0 / (epoch ^ .5)) * og_step_size;
         % minibatch update
         for batch=1:num_batches
             % prepare data
@@ -45,8 +46,8 @@ function [ w1, w2, test_err1, test_err2, train_err1, train_err2 ] = train_nn(obs
             data = rand_obs(start:stop,:); % batch_size x num_in
             labels = class_to_vector(rand_out(start:stop), num_out); % batch_size x num_out
             % make predictions and update for output layer
-            predictions1 = make_predictions(w1, data); % batch_size x num_out
-            predictions2 = make_predictions(w2, data); % batch_size x num_out
+            predictions1 = make_predictions(w1, data);
+            predictions2 = make_predictions(w2, data);
             % store error rates to plot
             if (epoch == 1 || mod(epoch,10) == 0)
                 %test and training set error
@@ -66,7 +67,7 @@ function [ w1, w2, test_err1, test_err2, train_err1, train_err2 ] = train_nn(obs
                     % output layer
                     if layer == length(w1)
                     	delta1 = -(labels(datum,:) - predictions1{layer+1}(datum,:)) .* predictions1{layer+1}(datum,:) .* (1 - predictions1{layer+1}(datum,:)); % 1 x num_out
-                        delta2 = ((1 - labels(datum,:)) ./ (1 - predictions2{layer+1}(datum,:)) - labels(datum,:) ./ predictions2{layer+1}(datum,:)) .*  predictions2{layer+1}(datum,:) .* (1 - predictions2{layer+1}(datum,:)); % 1 x num_out
+                        delta2 = ((1 - labels(datum,:)) ./ (1 - predictions2{layer+1}(datum,:) + epsilon) - labels(datum,:) ./ (predictions2{layer+1}(datum,:) + epsilon)) .*  predictions2{layer+1}(datum,:) .* (1 - predictions2{layer+1}(datum,:)); % 1 x num_out
                     % hidden layers
                     else
                         delta1 = (delta1 * w1{layer+1}') .* (1 - predictions1{layer+1}(datum,:) .^ 2);
