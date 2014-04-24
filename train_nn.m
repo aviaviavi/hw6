@@ -14,7 +14,7 @@ function [ w1, w2, test_err1, test_err2, train_err1, train_err2 ] = train_nn(obs
         sizes_hidden = [];
     end
     og_step_size = .01;
-    epsilon = .00000000001
+    epsilon = .001;
     % add in bias term
     obs = [obs ones(size(obs,1),1)];
     num_in = size(obs,2);
@@ -32,6 +32,14 @@ function [ w1, w2, test_err1, test_err2, train_err1, train_err2 ] = train_nn(obs
     num_epochs = 100;
     for epoch = 1:num_epochs
         epoch
+        % store error rates to plot
+        if (epoch == 1 || mod(epoch,10) == 0)
+            %test and training set error
+            test_err1 = [test_err1 set_err(w1, test_images, test_labels)];
+            test_err2 = [test_err2 set_err(w2, test_images, test_labels)];
+            train_err1 = [train_err1 set_err(w1, obs, out)];
+            train_err2 = [train_err2 set_err(w2, obs, out)];
+        end
         % shuffle data
         p = randperm(size(obs, 1));
         rand_obs = reshape(obs(p,:), size(obs, 1), size(obs, 2));
@@ -48,14 +56,7 @@ function [ w1, w2, test_err1, test_err2, train_err1, train_err2 ] = train_nn(obs
             % make predictions and update for output layer
             predictions1 = make_predictions(w1, data);
             predictions2 = make_predictions(w2, data);
-            % store error rates to plot
-            if (epoch == 1 || mod(epoch,10) == 0)
-                %test and training set error
-                test_err1 = [test_err1 set_err(w1, test_images, test_labels)];
-                test_err2 = [test_err2 set_err(w2, test_images, test_labels)];
-                train_err1 = [train_err1 set_err(w1, obs, out)];
-                train_err2 = [train_err2 set_err(w2, obs, out)];
-            end
+            predictions2{length(w1)+1}
             gradients1 = {};
             gradients2 = {};
             for layer=1:length(w1)

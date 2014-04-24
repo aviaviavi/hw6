@@ -7,14 +7,19 @@ function [newImages] = create_sparse_img(images)
 
 newImages = zeros(size(images,3),784);
 
-for i = 1:size(images,3)
+for i = 1:size(newImages,1)
     concatted = images(:,:,i);
-    for j = 1:784;
+    for j = 1:size(newImages,2);
         newImages(i,j) = concatted(j);
     end
-    %newImages(i,:) = newImages(i,:) / sum(newImages(i,:));
 end
-
+means = mean(newImages);
+for i=1:size(newImages,1)
+    newImages(i,:) = newImages(i,:) - means;
+end
+for i=1:size(newImages,2)
+    newImages(:,i) = newImages(:,i) / (std(newImages(:,i))+.0001);
+end
 newImages = sparse(newImages);
 
 end
