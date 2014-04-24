@@ -26,7 +26,7 @@ function [ w1, w2, test_err1, test_err2, train_err1, train_err2 ] = train_nn(obs
     for i = 1:length(sizes) - 1
         % center weights around 0
         w1{i} = rand(sizes(i), sizes(i+1)) - .5;
-        w2{i} = w1{i};% rand(sizes(i), sizes(i+1)) * .001 - .0005;
+        w2{i} = w1{i};
     end
     num_batches = ceil(size(obs, 1) / 200);
     num_epochs = 100;
@@ -56,11 +56,6 @@ function [ w1, w2, test_err1, test_err2, train_err1, train_err2 ] = train_nn(obs
             % make predictions and update for output layer
             predictions1 = make_predictions(w1, data);
             predictions2 = make_predictions(w2, data);
-            % scale predictions for error calculation
-            for layer=length(w1):-1:1
-                scaled_predictions1{layer+1} = (predictions1{layer} + 1) ./ 2;
-                scaled_predictions2{layer+1} = (predictions2{layer} + 1 
-            end
             gradients1 = {};
             gradients2 = {};
             for layer=1:length(w1)

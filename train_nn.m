@@ -29,7 +29,7 @@ function [ w1, w2, test_err1, test_err2, train_err1, train_err2 ] = train_nn(obs
         w2{i} = w1{i};
     end
     num_batches = ceil(size(obs, 1) / 200);
-    num_epochs = 100;
+    num_epochs = 50;
     for epoch = 1:num_epochs
         epoch
         % store error rates to plot
@@ -56,7 +56,6 @@ function [ w1, w2, test_err1, test_err2, train_err1, train_err2 ] = train_nn(obs
             % make predictions and update for output layer
             predictions1 = make_predictions(w1, data);
             predictions2 = make_predictions(w2, data);
-            predictions2{length(w1)+1}
             gradients1 = {};
             gradients2 = {};
             for layer=1:length(w1)
